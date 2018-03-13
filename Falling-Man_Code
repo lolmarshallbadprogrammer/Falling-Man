@@ -1,0 +1,76 @@
+var moveLeft;
+var moveRight;
+var xvel;
+var yvel;
+var xSpeed;
+var width = 80;
+var gravity;
+var jumpHeight = 30;
+var airTime;
+
+
+onEvent("startButton", "click", function(event){
+  setScreen("Game");
+  reset();
+  textLabel("test", 0);
+  Gravity();
+  timedLoop(12, update);
+});
+
+onEvent("Game", "keydown", function(event){
+  if(event.key == "Right"){
+  moveRight = true;
+  }
+  
+  if(event.key == "Left"){
+  moveLeft = true;
+  }
+  
+  if(event.key == "Up"){
+    jump = true;
+  }
+});
+
+onEvent("Game", "keyup", function(event){
+  if(event.key == "Right"){
+  moveRight = false;
+  }
+  
+  if(event.key == "Left"){
+  moveLeft = false;
+  }
+  
+});
+
+function update(){
+moveChar();
+gravity = (airTime/-9.8);
+setText("test", gravity);
+xvel = xSpeed + getXPosition("image1");
+yvel = getYPosition("image1") + gravity;
+
+setPosition("image1", xvel, yvel);
+}
+
+function moveChar(){
+  if(moveLeft && !moveRight && getXPosition("image1") + 20 > 0){
+    xSpeed = -5;
+  }
+   else if(moveRight && !moveLeft && getXPosition("image1") + width < 320){
+    xSpeed = 5;
+  }
+  else{
+    xSpeed = 0;
+  }
+}
+function Gravity(){
+  airTime = 0;
+    timedLoop(1, function(event){
+      airTime = airTime + 0.025;
+    });
+}
+
+function reset(){
+
+}
+
