@@ -7,14 +7,17 @@ var width = 80;
 var gravity;
 var jumpHeight = 30;
 var airTime;
+var barlength = 500;
+var barx;
 
-
-onEvent("startButton", "click", function(event){
+onEvent("startButton", "click", function(event){ 
   setScreen("Game");
   reset();
   textLabel("test", 0);
   Gravity();
   timedLoop(12, update);
+  makeObstacles();
+  timedLoop(5500, makeObstacles);
 });
 
 onEvent("Game", "keydown", function(event){
@@ -44,19 +47,21 @@ onEvent("Game", "keyup", function(event){
 
 function update(){
 moveChar();
-gravity = (airTime/-9.8);
+gravity =-(airTime/-2)*(airTime/-2);
 setText("test", gravity);
-xvel = xSpeed + getXPosition("image1");
-yvel = getYPosition("image1") + gravity;
+xvel = xSpeed + getXPosition("fallingMan");
+yvel = getYPosition("leftBar") + gravity;
 
-setPosition("image1", xvel, yvel);
+setPosition("leftBar", getXPosition("leftBar"), yvel);
+setPosition("rightBar", getXPosition("rightBar"), yvel);
+setPosition("fallingMan", xvel, getYPosition("fallingMan"));
 }
 
 function moveChar(){
-  if(moveLeft && !moveRight && getXPosition("image1") + 20 > 0){
+  if(moveLeft && !moveRight && getXPosition("fallingMan") + 20 > 0){
     xSpeed = -5;
   }
-   else if(moveRight && !moveLeft && getXPosition("image1") + width < 320){
+   else if(moveRight && !moveLeft && getXPosition("fallingMan") + width < 320){
     xSpeed = 5;
   }
   else{
@@ -65,9 +70,16 @@ function moveChar(){
 }
 function Gravity(){
   airTime = 0;
-    timedLoop(1, function(event){
-      airTime = airTime + 0.025;
-    });
+  timedLoop(1, function(event){
+    airTime = airTime + 0.001;
+  });
+}
+
+function makeObstacles(){
+  barx = randomNumber(0, 270);
+  setPosition("leftBar", barx - barlength, 500);
+  setPosition("rightBar", barx + randomNumber(70, 200), 500);
+
 }
 
 function reset(){
