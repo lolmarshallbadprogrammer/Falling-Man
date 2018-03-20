@@ -1,29 +1,31 @@
-var moveLeft;
-var moveRight;
-var xvel;
-var yvel;
-var xSpeed;
-var width = 80;
-var gravity;
-var airTime;
-var barlength = 500;
-var barx;
+var moveLeft; //tells if moveleft is true
+var moveRight; //tells if moveRight is true
+var xvel; //Velocity of moving on the x axis
+var yvel; //Velocity of moving on the y axis
+var xSpeed; //falling Mans speed
+var width = 80; //width of falling man
+var gravity; //Used to calculate how fast Falling man is going
+var airTime; //How long you have been falling to calculate Gravity
+var barlength = 500; //Length of obsticle 
+var barx; //Where the left obstiacle is on the X axis
 var score = 0;
-var gameEnd;
-var barDistance;
+var gameEnd; 
+var barDistance; //The distance between left and right obsticle 
 
+//starts game once start button is pressed (Marshall)
 onEvent("startButton", "click", function(event){ 
   gameEnd = false;
   setScreen("Game");
-  Gravity();
-  makeObsticle();
-  timedLoop(6000, makeObsticle);
-  timedLoop(13, update);
-  timedLoop(10, timeScore);
-  textLabel("scoreLabel", score);
+  Gravity();  //starts Gravity
+  makeObsticle(); //Makes Obsticles
+  timedLoop(6000, makeObsticle); //Makes Obsticle every 6 seconds 
+  timedLoop(13, update); // How often game updates
+  timedLoop(10, timeScore); // Calulates score
+  textLabel("scoreLabel", score); //score
 
 });
 
+//if key Right or key Left is down (Kane)
 onEvent("Game", "keydown", function(event){
   if(event.key == "Right"){
   moveRight = true;
@@ -34,6 +36,7 @@ onEvent("Game", "keydown", function(event){
   }
 });
 
+// if Key Right or key left is down (Kane)
 onEvent("Game", "keyup", function(event){
   if(event.key == "Right"){
   moveRight = false;
@@ -44,57 +47,64 @@ onEvent("Game", "keyup", function(event){
   }
 });
 
-function update(){
-moveChar();
-gravity =-(airTime/-2)*(airTime/-2);
+function update(){ //(Marshall)
+moveChar(); //Gets the direction the charater needs to be moved
+gravity =-(airTime/-2)*(airTime/-2); //Calculated gravity
+//Updates positions on everything
 xvel = xSpeed + getXPosition("fallingMan");
 yvel = getYPosition("leftBar") + gravity;
 setPosition("leftBar", getXPosition("leftBar"), yvel);
 setPosition("rightBar", getXPosition("rightBar"), yvel);
 setPosition("fallingMan", xvel, getYPosition("fallingMan"));
-test4Fail();
-setText("scoreLabel", Math.round(score));
+testFail(); //tests to see if failed
+
+setText("scoreLabel", Math.round(score)); //Updates score on screen
 }
 
+
+// Makes Falling man Move (Kane)
 function moveChar(){
-  if(moveLeft && !moveRight && getXPosition("fallingMan") + 20 > 0){
+  if(moveLeft && !moveRight && getXPosition("fallingMan") + 20 > 0){ //If moveleft is pressed and not move right and not hitting the edge
     xSpeed = -5;
   }
-   else if(moveRight && !moveLeft && getXPosition("fallingMan") + width < 320){
+   else if(moveRight && !moveLeft && getXPosition("fallingMan") + width < 320){ //if moveRight is pressed then not move left and not hit edge
     xSpeed = 5;
   }
-  else{
-    xSpeed = 0;
+  else{ //if nothing is pressed or both are pressed
+    xSpeed = 0; 
   }
 }
-function Gravity(){
+function Gravity(){ //Marshall
   airTime = 0;
-  timedLoop(1, function(event){
+  timedLoop(1, function(event){ //Adds 0.001 to airTime every milisecond
     airTime = airTime + 0.001;
   });
 }
 
-function makeObsticle(){
-  barx = randomNumber(0, 270);
-  barDistance = randomNumber(70, 200);
+function makeObsticle(){ //Marshall
+  barx = randomNumber(0, 270); //Sets barx to a random number where it won't be hitting the edge
+  barDistance = randomNumber(70, 200); //Sets barDistance to a numebr where you will have enough room to get through
   
+  //Sets positions of obsticles
   setPosition("leftBar", barx - barlength, 500);
   setPosition("rightBar", barx + barDistance, 500);
 }
 
-function test4Fail(){
+function testFail(){ //Kane 
+  //if falling man is hitting the obsticles then endgame.
   if((getXPosition("fallingMan") + 20 <= getXPosition("leftBar") + barlength || getXPosition("fallingMan") + width >= getXPosition("rightBar")) && (getYPosition("fallingMan") + 85 == getYPosition("leftBar") || getYPosition("fallingMan") + 85 == getYPosition("rightBar"))){
     gameOver();
   }
 }
 
 
-function gameOver(){
+function gameOver(){ //Kane | sets screen to "your score", ends game and shows final score
+setScreen("yourscore");
 gameEnd = true;
-  
+setText("scoreText", "You lasted " + Math.round(score) + " Seconds!");
 }
 
-function timeScore(){
+function timeScore(){ //Marshall updates score
   if(gameEnd === false){
     score = score + 0.01;
   }
