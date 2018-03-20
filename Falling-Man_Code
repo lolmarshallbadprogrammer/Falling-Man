@@ -5,19 +5,23 @@ var yvel;
 var xSpeed;
 var width = 80;
 var gravity;
-var jumpHeight = 30;
 var airTime;
 var barlength = 500;
 var barx;
+var score = 0;
+var gameEnd;
+var barDistance;
 
 onEvent("startButton", "click", function(event){ 
+  gameEnd = false;
   setScreen("Game");
-  reset();
-  textLabel("test", 0);
   Gravity();
-  timedLoop(12, update);
-  makeObstacles();
-  timedLoop(5500, makeObstacles);
+  makeObsticle();
+  timedLoop(6000, makeObsticle);
+  timedLoop(13, update);
+  timedLoop(10, timeScore);
+  textLabel("scoreLabel", score);
+
 });
 
 onEvent("Game", "keydown", function(event){
@@ -27,10 +31,6 @@ onEvent("Game", "keydown", function(event){
   
   if(event.key == "Left"){
   moveLeft = true;
-  }
-  
-  if(event.key == "Up"){
-    jump = true;
   }
 });
 
@@ -42,19 +42,18 @@ onEvent("Game", "keyup", function(event){
   if(event.key == "Left"){
   moveLeft = false;
   }
-  
 });
 
 function update(){
 moveChar();
 gravity =-(airTime/-2)*(airTime/-2);
-setText("test", gravity);
 xvel = xSpeed + getXPosition("fallingMan");
 yvel = getYPosition("leftBar") + gravity;
-
 setPosition("leftBar", getXPosition("leftBar"), yvel);
 setPosition("rightBar", getXPosition("rightBar"), yvel);
 setPosition("fallingMan", xvel, getYPosition("fallingMan"));
+test4Fail();
+setText("scoreLabel", Math.round(score));
 }
 
 function moveChar(){
@@ -75,14 +74,28 @@ function Gravity(){
   });
 }
 
-function makeObstacles(){
+function makeObsticle(){
   barx = randomNumber(0, 270);
+  barDistance = randomNumber(70, 200);
+  
   setPosition("leftBar", barx - barlength, 500);
-  setPosition("rightBar", barx + randomNumber(70, 200), 500);
-
+  setPosition("rightBar", barx + barDistance, 500);
 }
 
-function reset(){
-
+function test4Fail(){
+  if((getXPosition("fallingMan") + 20 <= getXPosition("leftBar") + barlength || getXPosition("fallingMan") + width >= getXPosition("rightBar")) && (getYPosition("fallingMan") + 85 == getYPosition("leftBar") || getYPosition("fallingMan") + 85 == getYPosition("rightBar"))){
+    gameOver();
+  }
 }
 
+
+function gameOver(){
+gameEnd = true;
+  
+}
+
+function timeScore(){
+  if(gameEnd === false){
+    score = score + 0.01;
+  }
+}
